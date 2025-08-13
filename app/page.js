@@ -44,42 +44,45 @@ export default function RecipeReviewApp() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-lg mx-auto p-4 shadow-lg bg-white rounded">
-        <h1 className="text-2xl font-bold mb-4">Add Recipe Review</h1>
+    <div className="min-h-screen bg-gray-50 py-10 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-2xl mx-auto bg-white shadow-lg rounded-xl p-6">
+        <h1 className="text-3xl font-bold text-gray-800 mb-6">
+          Recipe Reviews
+        </h1>
 
+        {/* Form */}
         <div className="space-y-4">
           <div>
-            <label htmlFor="link" className="block font-medium mb-1">
+            <label className="block text-gray-700 font-medium mb-1">
               Recipe Link
             </label>
             <input
-              id="link"
               type="text"
-              className="w-full border border-gray-300 rounded px-3 py-2"
+              className="w-full border border-gray-300 rounded-md px-4 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none"
+              placeholder="https://..."
               value={link}
               onChange={(e) => setLink(e.target.value)}
-              placeholder="https://..."
             />
           </div>
 
           <div>
-            <label className="block font-medium mb-1">
+            <label className="block text-gray-700 font-medium mb-1">
               Rating: {rating}/10
             </label>
             <input
               type="range"
               min={1}
               max={10}
-              step={1}
               value={rating}
               onChange={(e) => setRating(Number(e.target.value))}
-              className="w-full"
+              className="w-full accent-blue-500"
             />
           </div>
 
           <div>
-            <label className="block font-medium mb-1">Attributes</label>
+            <label className="block text-gray-700 font-medium mb-1">
+              Attributes
+            </label>
             <Select
               isMulti
               options={ATTR_OPTIONS}
@@ -94,28 +97,29 @@ export default function RecipeReviewApp() {
 
           <button
             onClick={addReview}
-            className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
+            className="w-full bg-blue-600 text-white font-semibold py-2 rounded-lg shadow-md hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-400"
           >
             Save Review
           </button>
         </div>
       </div>
 
-      <div className="mt-8 max-w-lg mx-auto space-y-4">
+      {/* Reviews List */}
+      <div className="max-w-2xl mx-auto mt-10 space-y-4">
         {reviews.map((rev) => (
           <div
             key={rev.id}
-            className="shadow-md p-4 bg-white rounded border border-gray-200"
+            className="bg-white shadow-md rounded-lg p-4 border border-gray-200"
           >
             <a
               href={rev.link}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-lg font-semibold text-blue-600 hover:underline"
+              className="text-blue-600 font-semibold hover:underline break-words"
             >
               {rev.link}
             </a>
-            <p className="mt-2 text-sm text-gray-600">⭐ {rev.rating}/10</p>
+            <p className="mt-2 text-gray-700">⭐ Rating: {rev.rating}/10</p>
             <div className="mt-2 flex flex-wrap gap-2">
               {rev.attributes?.map((attr) => (
                 <span

@@ -1,36 +1,103 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Recipe Reviews App
 
-## Getting Started
+A modern web app to save and rate recipes with attributes. Built with Next.js, Tailwind CSS, React Select, and Supabase.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Features
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- Add a recipe link and rate it from 1–10  
+- Select multiple attributes (Healthy, Quick, Kid-friendly, etc.)  
+- Display saved reviews in cards with styling  
+- Fully responsive design  
+- Uses Supabase as backend  
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Project Structure
 
-## Learn More
+- **app/**  
+  - layout.js → Root layout with Tailwind and fonts  
+  - page.js → Main page with form and reviews list  
+  - globals.css → Tailwind directives and custom global styles  
+- **lib/**  
+  - supabaseClient.js → Supabase client configuration  
+- package.json  
+- postcss.config.js  
+- tailwind.config.js  
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Installation
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. Make sure Node.js v18 or higher is installed  
+2. Install dependencies using pnpm: `pnpm install`  
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Configuration
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Supabase
+
+- Create a project at https://app.supabase.com  
+- Get the anon API key  
+- Create a table called `reviews` with columns:  
+  - `id` (bigint, auto-increment, primary key)  
+  - `link` (text)  
+  - `rating` (integer)  
+  - `attributes` (text array)  
+  - `created_at` (timestamp, default now())  
+
+### Supabase Client (lib/supabaseClient.js)
+
+- import { createClient } from "@supabase/supabase-js"  
+- const supabaseUrl = "YOUR_SUPABASE_URL"  
+- const supabaseAnonKey = "YOUR_ANON_KEY"  
+- export const supabase = createClient(supabaseUrl, supabaseAnonKey)  
+
+---
+
+## Tailwind CSS Setup
+
+### globals.css
+
+- @tailwind base  
+- @tailwind components  
+- @tailwind utilities  
+- html, body { height: 100%; background-color: #f9fafb; }  
+- body { font-family: var(--font-geist-sans), system-ui, sans-serif; }  
+
+### postcss.config.js
+
+- module.exports = { plugins: { '@tailwindcss/postcss': {}, autoprefixer: {} } }  
+
+### tailwind.config.js
+
+- module.exports = {  
+    content: ['./app/**/*.{js,jsx}', './pages/**/*.{js,jsx}', './components/**/*.{js,jsx}'],  
+    theme: { extend: {} },  
+    plugins: []  
+  }  
+
+### Import globals.css in layout.js
+
+- import './globals.css'  
+- function RootLayout({ children }) { return html lang="en" body {children} }  
+
+---
+
+## Running the App
+
+- Start the dev server: `pnpm run dev`  
+- Open browser at http://localhost:3000  
+
+---
+
+## Notes
+
+- If Tailwind classes don’t appear:  
+  - Make sure globals.css is imported in layout.js  
+  - Tailwind config content paths include your JSX files  
+  - Restart the dev server after changing configs  
+
+- For Next.js 15 + Turbopack + Tailwind v4, PostCSS plugins may not fully work. Using Tailwind v3 or Webpack avoids this issue. 
