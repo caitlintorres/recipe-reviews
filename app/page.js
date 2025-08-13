@@ -1,22 +1,24 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import Select from "react-select";
-import { supabase } from "@/lib/supabaseClient";
+import { useState, useEffect, useMemo } from 'react';
+import { supabase } from '@/lib/supabaseClient';
+import dynamic from 'next/dynamic';
+
+const Select = dynamic(() => import('react-select'), { ssr: false });
 
 export default function RecipeReviewApp() {
-  const [link, setLink] = useState("");
+  const [link, setLink] = useState('');
   const [rating, setRating] = useState(5);
   const [attributes, setAttributes] = useState([]);
   const [reviews, setReviews] = useState([]);
 
-  const ATTR_OPTIONS = [
-    { label: "Healthy", value: "Healthy" },
-    { label: "Quick", value: "Quick" },
-    { label: "Kid-friendly", value: "Kid-friendly" },
-    { label: "Budget", value: "Budget" },
-    { label: "Special Occasion", value: "Special Occasion" },
-  ];
+  const ATTR_OPTIONS = useMemo(() => [
+    { label: 'Healthy', value: 'Healthy' },
+    { label: 'Quick', value: 'Quick' },
+    { label: 'Kid-friendly', value: 'Kid-friendly' },
+    { label: 'Budget', value: 'Budget' },
+    { label: 'Special Occasion', value: 'Special Occasion' },
+  ], []);
 
   useEffect(() => {
     fetchReviews();
@@ -24,38 +26,38 @@ export default function RecipeReviewApp() {
 
   async function fetchReviews() {
     const { data, error } = await supabase
-      .from("reviews")
-      .select("*")
-      .order("created_at", { ascending: false });
+      .from('reviews')
+      .select('*')
+      .order('created_at', { ascending: false });
     if (!error && data) setReviews(data);
   }
 
   async function addReview() {
     if (!link) return;
-    const { error } = await supabase.from("reviews").insert([
+    const { error } = await supabase.from('reviews').insert([
       { link, rating, attributes },
     ]);
     if (!error) {
-      setLink("");
+      setLink('');
       setRating(5);
       setAttributes([]);
       fetchReviews();
     }
   }
 
+  const selectValue = useMemo(
+    () => ATTR_OPTIONS.filter((o) => attributes.includes(o.value)),
+    [attributes, ATTR_OPTIONS]
+  );
+
   return (
     <div className="min-h-screen bg-gray-50 py-10 px-4 sm:px-6 lg:px-8">
       <div className="max-w-2xl mx-auto bg-white shadow-lg rounded-xl p-6">
-        <h1 className="text-3xl font-bold text-gray-800 mb-6">
-          Recipe Reviews
-        </h1>
+        <h1 className="text-3xl font-bold text-gray-800 mb-6">Recipe Reviews</h1>
 
-        {/* Form */}
         <div className="space-y-4">
           <div>
-            <label className="block text-gray-700 font-medium mb-1">
-              Recipe Link
-            </label>
+            <label className="block text-gray-700 font-medium mb-1">Recipe Link</label>
             <input
               type="text"
               className="w-full border border-gray-300 rounded-md px-4 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none"
@@ -66,9 +68,7 @@ export default function RecipeReviewApp() {
           </div>
 
           <div>
-            <label className="block text-gray-700 font-medium mb-1">
-              Rating: {rating}/10
-            </label>
+            <label className="block text-gray-700 font-medium mb-1">Rating: {rating}/10</label>
             <input
               type="range"
               min={1}
@@ -80,13 +80,11 @@ export default function RecipeReviewApp() {
           </div>
 
           <div>
-            <label className="block text-gray-700 font-medium mb-1">
-              Attributes
-            </label>
+            <label className="block text-gray-700 font-medium mb-1">Attributes</label>
             <Select
               isMulti
               options={ATTR_OPTIONS}
-              value={ATTR_OPTIONS.filter((o) => attributes.includes(o.value))}
+              value={selectValue}
               onChange={(vals) =>
                 setAttributes(vals ? vals.map((v) => v.value) : [])
               }
@@ -104,7 +102,6 @@ export default function RecipeReviewApp() {
         </div>
       </div>
 
-      {/* Reviews List */}
       <div className="max-w-2xl mx-auto mt-10 space-y-4">
         {reviews.map((rev) => (
           <div
@@ -121,7 +118,7 @@ export default function RecipeReviewApp() {
             </a>
             <p className="mt-2 text-gray-700">⭐ Rating: {rev.rating}/10</p>
             <div className="mt-2 flex flex-wrap gap-2">
-              {rev.attributes?.map((attr) => (
+              {(rev.attributes || []).map((attr) => (
                 <span
                   key={attr}
                   className="bg-gray-200 text-gray-700 px-2 py-1 rounded-full text-xs"
